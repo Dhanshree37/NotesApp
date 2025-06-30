@@ -27,6 +27,17 @@ A simple Notes CRUD (Create, Read, Update, Delete) API built with Spring Boot, s
 - Java 11 or higher
 - Maven
 - MySQL
+## Future Improvements
+
+- Switch to JWT-based authentication for stateless token-based security
+- Add role-based authorization (e.g., admin, user)
+- Build a frontend using React or Angular for a modern SPA experience
+- Implement a user registration page to allow self-signup
+
+  
+## License
+
+This project is for educational/demo purposes. Feel free to fork and build upon it!
 
 ### Running the App
 
@@ -88,11 +99,4 @@ NotesApp
  └── pom.xml
 
 
-Future Improvements
-JWT-based authentication
-Role-based authorization
-Frontend with React or Angular
-User registration page
 
-License
-This project is for educational/demo purposes. Feel free to fork and build upon it!
