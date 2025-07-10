@@ -39,7 +39,10 @@ public class SecurityConfig {
                 .defaultSuccessUrl("/api/notes", true)
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/")
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/logout-success")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
             );
         return http.build();
     }
