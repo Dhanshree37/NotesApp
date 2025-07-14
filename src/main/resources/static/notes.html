@@ -1,0 +1,30 @@
+<!-- static/notes.html -->
+
+
+<meta http-equiv="Cache-Control" content="no-store" />
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Notes</title>
+  <link rel="stylesheet" href="css/notes.css">
+</head>
+<body>
+  <button id="logoutBtn">Logout</button>
+  <div class="notes-container">
+    <h2>Your Notes</h2>
+
+    <form id="noteForm">
+      <input type="text" id="title" placeholder="Note Title" required>
+      <textarea id="content" placeholder="Note Content" required></textarea>
+      <button type="submit">Add Note</button>
+    </form>
+
+    <div id="notesList"></div>
+  </div>
+
+  <script src="js/notes.js"></script>
+</body>
+</html>

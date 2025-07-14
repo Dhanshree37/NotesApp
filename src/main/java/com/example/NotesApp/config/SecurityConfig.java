@@ -1,9 +1,3 @@
-//package com.example.NotesApp.config;
-
-//public class SecurityConfig {
-    
-//}
-
 package com.example.NotesApp.config;
 
 import com.example.NotesApp.service.CustomUserDetailsService;
@@ -11,12 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 public class SecurityConfig {
+    @Autowired
+    private CustomAuthenticationFailureHandler failureHandler;
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
@@ -26,24 +26,34 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeRequests(auth -> auth
-            .antMatchers("/api/notes/**").authenticated()
-            .anyRequest().permitAll()
+                .antMatchers("/api/notes/**").authenticated()
+                .anyRequest().permitAll()
             )
-
             .formLogin(form -> form
-                .defaultSuccessUrl("/api/notes", true)
-            )
+            .loginPage("/login.html")
+            .loginProcessingUrl("/login")
+            .defaultSuccessUrl("/notes.html", true)
+            .failureHandler(failureHandler)  // <-- use this instead of failureUrl
+            .permitAll()
+)
             .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/logout-success")
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutSuccessUrl("/login.html?logout=true")
                 .invalidateHttpSession(true)
                 .deleteCookies("JSESSIONID")
             );
+
         return http.build();
     }
 }

@@ -16,17 +16,6 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         errorMsg.textContent = "Username and password are required.";
         return;
     }
-
-    if (username.length < 3) {
-        errorMsg.textContent = "Username must be at least 3 characters.";
-        return;
-    }
-
-    if (password.length < 6) {
-        errorMsg.textContent = "Password must be at least 6 characters.";
-        return;
-    }
-
     try {
         const response = await fetch("/login", {
             method: "POST",
