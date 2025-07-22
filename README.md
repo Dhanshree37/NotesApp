@@ -27,41 +27,26 @@ A simple Notes CRUD (Create, Read, Update, Delete) API built with Spring Boot, s
 - Java 11 or higher
 - Maven
 - MySQL
-## Future Improvements
-
-- Switch to JWT-based authentication for stateless token-based security
-- Add role-based authorization (e.g., admin, user)
-- Build a frontend using React or Angular for a modern SPA experience
-- Implement a user registration page to allow self-signup
-
-  
-## License
-
-This project is for educational/demo purposes. Feel free to fork and build upon it!
 
 ### Running the App
 
 1. Clone the repository:
 
-```bash
+```
 git clone https://github.com/Dhanshree37/NotesApp.git
 cd NotesApp
+```
 Configure your database connection in src/main/resources/application.properties:
-
-properties
-Copy
-Edit
+```
 spring.datasource.url=jdbc:mysql://localhost:3306/notesdb
 spring.datasource.username=your_db_user
 spring.datasource.password=your_db_password
 spring.jpa.hibernate.ddl-auto=update
+```
 Build and run:
-
-bash
-Copy
-Edit
+```
 mvn spring-boot:run
-
+```
 The app will start on http://localhost:8080.
 
 Using the API
@@ -80,9 +65,8 @@ DELETE/api/notes/{id} — Delete a note
 All these endpoints are protected; you must be logged in.
 
 Folder Structure Overview
-arduino
-Copy
-Edit
+
+```
 NotesApp
  ├── src
  │   └── main
@@ -97,6 +81,16 @@ NotesApp
  │            ├── application.properties
  │            └── static / templates (for future frontend)
  └── pom.xml
+```
 
+## Future Improvements
 
+- Switch to JWT-based authentication for stateless token-based security
+- Add role-based authorization (e.g., admin, user)
+- Build a frontend using React or Angular for a modern SPA experience
+- Implement a user registration page to allow self-signup
 
+  
+## License
+
+This project is for educational/demo purposes. Feel free to fork and build upon it!
