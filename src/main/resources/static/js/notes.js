@@ -4,10 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const contentInput = document.getElementById("content");
   const notesList = document.getElementById("notesList");
   const logoutBtn = document.getElementById("logoutBtn");
+  const submitBtn = document.getElementById("submitBtn");
+
+  let editingNoteId = null; // Track note being edited
 
   const fetchNotes = () => {
     fetch("/api/notes", {
-      credentials: "include" // include session cookie
+      credentials: "include"
     })
       .then(res => {
         if (res.status === 401) {
@@ -23,22 +26,60 @@ document.addEventListener("DOMContentLoaded", () => {
           const noteDiv = document.createElement("div");
           noteDiv.className = "note";
           noteDiv.innerHTML = `
-            <h3>${note.title}</h3>
-            <p>${note.content}</p>
-            <button onclick="deleteNote(${note.id})">Delete</button>
-          `;
+  <h3>${note.title}</h3>
+  <p>${note.content}</p>
+  <div class="note-actions">
+    <button class="editBtn" onclick="startEdit('${note.id}', \`${note.title}\`, \`${note.content}\`)">✏ Edit</button>
+    <button class="deleteBtn" onclick="deleteNote('${note.id}')">🗑 Delete</button>
+  </div>
+`;
           notesList.appendChild(noteDiv);
         });
       });
   };
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const note = {
-      title: titleInput.value,
-      content: contentInput.value
-    };
+  window.startEdit = (id, title, content) => {
+    titleInput.value = title;
+    contentInput.value = content;
+    editingNoteId = id;
+    submitBtn.textContent = "Update Note";
+  };
 
+  window.deleteNote = (id) => {
+    fetch(`/api/notes/${id}`, {
+      method: "DELETE",
+      credentials: "include"
+    }).then(() => {
+      fetchNotes();
+    });
+  };
+
+  form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const note = {
+    title: titleInput.value,
+    content: contentInput.value
+  };
+
+  // If editing
+  if (editingNoteId) {
+    fetch(`/api/notes/${editingNoteId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(note),
+      credentials: "include"
+    }).then(() => {
+      titleInput.value = "";
+      contentInput.value = "";
+      submitBtn.textContent = "Add Note";
+      editingNoteId = null;
+      fetchNotes();
+    });
+  } else {
+    // If creating new note
     fetch("/api/notes", {
       method: "POST",
       headers: {
@@ -51,16 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
       contentInput.value = "";
       fetchNotes();
     });
-  });
+  }
+});
 
-  window.deleteNote = (id) => {
-    fetch(`/api/notes/${id}`, {
-      method: "DELETE",
-      credentials: "include"
-    }).then(() => {
-      fetchNotes();
-    });
-  };
+
 
   logoutBtn.addEventListener("click", () => {
     fetch("/logout", {

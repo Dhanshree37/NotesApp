@@ -49,18 +49,26 @@ body {
   margin-top: 0;
 }
 
-.note button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #ff5252;
+.note-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.note-actions button {
+  flex: 1;
   color: white;
   border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
+  padding: 8px;
+  border-radius: 5px;
   cursor: pointer;
 }
 
-.note button:hover {
-  background: #d32f2f;
+.editBtn {
+  background-color: #4CAF50;
 }
+
+.deleteBtn {
+  background-color: #f44336;
+}
+

@@ -38,8 +38,10 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeRequests(auth -> auth
                 .antMatchers("/api/notes/**").authenticated()
+                .antMatchers("/notes.html").authenticated()
                 .anyRequest().permitAll()
             )
+            
             .formLogin(form -> form
             .loginPage("/login.html")
             .loginProcessingUrl("/login")
