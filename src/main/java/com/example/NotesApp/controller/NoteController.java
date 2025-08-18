@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import com.example.NotesApp.service.NoteService;
 
 
 import java.util.List;
@@ -29,16 +30,19 @@ public class NoteController {
     private NoteRepository noteRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private NoteService noteService;
 
     // GET all notes
     @GetMapping
     public List<Note> getAllNotes() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        User user = userRepository.findByUsername(username);
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    String username = auth.getName();
+    User user = userRepository.findByUsername(username);
 
-        return noteRepository.findByUserId(user.getId());
-    }
+    // Correct method call with actual user ID
+    return noteRepository.findByUserIdOrderByPinnedDescIdDesc(user.getId());
+}
 
     // POST a new note
     @PostMapping
@@ -65,6 +69,11 @@ public class NoteController {
             note.setContent(updatedNote.getContent());
             return noteRepository.save(note);
         }).orElse(null);
+    }
+
+    @PutMapping("/{id}/pin")
+    public Note togglePin(@PathVariable Long id) {
+        return noteService.togglePin(id);
     }
 
     // DELETE note

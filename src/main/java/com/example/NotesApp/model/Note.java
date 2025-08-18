@@ -23,7 +23,17 @@ public class Note {
     @JsonIgnoreProperties("notes")  // ignore the notes field of the user during serialization
     private User user;
 
+    private boolean pinned = false;
 
+    // getters and setters
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
+    
     // constructor, getters, setters
     public Note() {}
 
