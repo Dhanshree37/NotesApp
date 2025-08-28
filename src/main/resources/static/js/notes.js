@@ -156,4 +156,44 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   fetchNotes();
+  const searchInput = document.getElementById("searchNotes");
+
+searchInput.addEventListener("input", () => {
+  const query = searchInput.value.toLowerCase();
+  const allNotes = document.querySelectorAll("#notesList .note");
+  
+  allNotes.forEach(note => {
+    const title = note.querySelector("h3").textContent.toLowerCase();
+    const content = note.querySelector("p").textContent.toLowerCase();
+    if (title.includes(query) || content.includes(query)) {
+      note.style.display = "flex";
+    } else {
+      note.style.display = "none";
+    }
+  });
+});
+
+
+const themeToggleBtn = document.getElementById("themeToggleBtn");
+
+// Load theme from localStorage if available
+if(localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark-mode");
+  themeToggleBtn.textContent = "☀️";
+}
+
+// Toggle theme on button click
+themeToggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+
+  if(document.body.classList.contains("dark-mode")) {
+    themeToggleBtn.textContent = "☀️"; // sun icon for light mode
+    localStorage.setItem("theme", "dark");
+  } else {
+    themeToggleBtn.textContent = "🌙"; // moon icon for dark mode
+    localStorage.setItem("theme", "light");
+  }
+});
+
+
 });
