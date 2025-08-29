@@ -2,6 +2,11 @@
 
 A simple Notes CRUD (Create, Read, Update, Delete) API built with Spring Boot, supporting user authentication and personalized note management.
 
+## Screenshots
+
+![Notes Home](/notesHome.png)
+![Overlay Notes](/overlayNotes.png)
+
 ## Features
 
 ✅ User authentication with Spring Security (session-based)  
