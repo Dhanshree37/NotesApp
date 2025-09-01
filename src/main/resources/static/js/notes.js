@@ -1,5 +1,5 @@
-// Ensure HTTPS
-if (window.location.protocol !== "https:") {
+// Force HTTPS for deployed environment
+if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
   window.location.href = window.location.href.replace("http:", "https:");
 }
 
@@ -7,36 +7,31 @@ if (window.location.protocol !== "https:") {
 document.getElementById("loginForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  const usernameInput = document.getElementById("username");
-  const passwordInput = document.getElementById("password");
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
   const errorMsg = document.getElementById("error-msg");
-
-  const username = usernameInput.value.trim();
-  const password = passwordInput.value.trim();
 
   // Clear previous error
   errorMsg.textContent = "";
 
-  // Basic validation
-  if (username === "" || password === "") {
+  if (!username || !password) {
     errorMsg.textContent = "Username and password are required.";
     return;
   }
 
   try {
-    const response = await fetch(`${window.location.origin}/login`, {
+    const response = await fetch("/login", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ username, password }),
-      credentials: "include" // important to store session cookie
+      credentials: "include"
     });
 
     if (response.ok) {
-      // Redirect using same protocol and host
-      window.location.replace(`${window.location.origin}/notes.html`);
+      // Relative redirect avoids mixed content issues
+      window.location.href = "/notes.html";
     } else {
-      const text = await response.text();
-      errorMsg.textContent = text || "Invalid username or password.";
+      errorMsg.textContent = "Invalid username or password.";
     }
   } catch (err) {
     errorMsg.textContent = "Login failed. Please try again.";
