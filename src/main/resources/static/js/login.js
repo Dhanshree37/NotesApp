@@ -21,15 +21,15 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   }
 
   try {
-    const response = await fetch("/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ username, password }),
-      credentials: "include" // important to store session cookie
-    });
+    const response = await fetch(`${window.location.origin}/login`, {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: new URLSearchParams({ username, password }),
+  credentials: "include"
+});
 
     if (response.ok) {
-      window.location.replace("/notes.html");
+      window.location.replace(`${window.location.origin}/notes.html`);
     } else {
       errorMsg.textContent = "Invalid username or password.";
     }
