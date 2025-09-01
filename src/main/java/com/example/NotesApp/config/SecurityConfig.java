@@ -15,6 +15,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 public class SecurityConfig {
+
     @Autowired
     private CustomAuthenticationFailureHandler failureHandler;
 
@@ -26,7 +27,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
@@ -36,19 +36,18 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
-            .authorizeRequests(auth -> auth
-                .antMatchers("/api/notes/**").authenticated()
-                .antMatchers("/notes.html").authenticated()
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(new AntPathRequestMatcher("/api/notes/**")).authenticated()
+                .requestMatchers(new AntPathRequestMatcher("/notes.html")).authenticated()
                 .anyRequest().permitAll()
             )
-            
             .formLogin(form -> form
-            .loginPage("/login.html")
-            .loginProcessingUrl("/login")
-            .defaultSuccessUrl("/notes.html", true)
-            .failureHandler(failureHandler)  // <-- use this instead of failureUrl
-            .permitAll()
-)
+                .loginPage("/login.html")
+                .loginProcessingUrl("/login")
+                .defaultSuccessUrl("/notes.html", true)
+                .failureHandler(failureHandler)
+                .permitAll()
+            )
             .logout(logout -> logout
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                 .logoutSuccessUrl("/login.html?logout=true")
