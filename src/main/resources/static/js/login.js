@@ -1,40 +1,33 @@
-// Force HTTPS in production
-if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
-  window.location.href = window.location.href.replace("http:", "https:");
+// Helper to get correct base URL dynamically
+function getBaseURL() {
+  return window.location.protocol + "//" + window.location.host;
 }
 
-// Handle login form submit
-document.getElementById("loginForm").addEventListener("submit", async function (e) {
+// ---------------- LOGIN ----------------
+document.getElementById("loginForm")?.addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  const usernameInput = document.getElementById("username");
-  const passwordInput = document.getElementById("password");
+  const username = document.getElementById("username").value.trim();
+  const password = document.getElementById("password").value.trim();
   const errorMsg = document.getElementById("error-msg");
-
-  const username = usernameInput.value.trim();
-  const password = passwordInput.value.trim();
-
-  // Clear previous error
   errorMsg.textContent = "";
 
-  // Basic validation
   if (!username || !password) {
     errorMsg.textContent = "Username and password are required.";
     return;
   }
 
   try {
-    // Use relative URL for login to avoid mixed content
-    const response = await fetch("/login", {
+    const response = await fetch(getBaseURL() + "/login", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ username, password }),
-      credentials: "include" // important to store session cookie
+      credentials: "include"
     });
 
     if (response.ok) {
-      // Redirect using relative URL (automatically uses HTTPS)
-      window.location.href = "/notes.html";
+      // Redirect to notes page
+      window.location.href = getBaseURL() + "/notes.html";
     } else {
       errorMsg.textContent = "Invalid username or password.";
     }
