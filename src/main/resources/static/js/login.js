@@ -1,7 +1,9 @@
 // Helper to get correct base URL dynamically
 function getBaseURL() {
-  return window.location.protocol + "//" + window.location.host;
+  // Force HTTPS on deployment, keep HTTP for localhost
+  return (window.location.hostname === "localhost" ? window.location.protocol : "https:") + "//" + window.location.host;
 }
+
 
 // ---------------- LOGIN ----------------
 document.getElementById("loginForm")?.addEventListener("submit", async function(e) {
