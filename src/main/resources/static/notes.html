@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <title>Your Notes</title>
-  <link rel="stylesheet" href="css/notes.css">
+  <link rel="stylesheet" href="/css/notes.css">
 </head>
 <body>
 
-   <nav class="navbar">
+  <nav class="navbar">
     <div class="navbar-left">
       <h2 class="logo">MyNotes</h2>
     </div>
@@ -16,10 +16,10 @@
       <input type="text" id="searchNotes" placeholder="Search notes...">
     </div>
 
-      <div class="navbar-right">
-        <button id="themeToggleBtn" class="nav-btn">🌙</button>
-        <button id="logoutBtn" class="nav-btn">Logout</button>
-      </div>
+    <div class="navbar-right">
+      <button id="themeToggleBtn" class="nav-btn">🌙</button>
+      <button id="logoutBtn" class="nav-btn">Logout</button>
+    </div>
   </nav>
 
   <div class="notes-container">
@@ -36,17 +36,17 @@
 
   <!-- Overlay for editing notes -->
   <div id="noteOverlay" class="overlay hidden">
-  <div class="overlay-content">
-    <div class="overlay-header">
-      <button id="overlayPinBtn" class="icon-btn">📌</button>
-      <button id="overlayDeleteBtn" class="icon-btn">🗑</button>
-      <button id="overlayCloseBtn" class="icon-btn">×</button>
+    <div class="overlay-content">
+      <div class="overlay-header">
+        <button id="overlayPinBtn" class="icon-btn">📌</button>
+        <button id="overlayDeleteBtn" class="icon-btn">🗑</button>
+        <button id="overlayCloseBtn" class="icon-btn">×</button>
+      </div>
+      <input id="overlayTitle" type="text" placeholder="Title">
+      <textarea id="overlayContent" placeholder="Content"></textarea>
     </div>
-    <input id="overlayTitle" type="text" placeholder="Title">
-    <textarea id="overlayContent" placeholder="Content"></textarea>
   </div>
-</div>
 
-  <script src="js/notes.js"></script>
+  <script src="/js/notes.js"></script>
 </body>
 </html>
