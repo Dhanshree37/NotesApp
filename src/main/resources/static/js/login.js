@@ -1,4 +1,4 @@
-// Force HTTPS (for deployed environment)
+// Force HTTPS in production
 if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
   window.location.href = window.location.href.replace("http:", "https:");
 }
@@ -24,7 +24,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
   }
 
   try {
-    // Use relative URL for login to avoid mixed content issues
+    // Use relative URL for login to avoid mixed content
     const response = await fetch("/login", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -33,7 +33,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     });
 
     if (response.ok) {
-      // Redirect using relative URL (avoids http/https issues)
+      // Redirect using relative URL (automatically uses HTTPS)
       window.location.href = "/notes.html";
     } else {
       errorMsg.textContent = "Invalid username or password.";
