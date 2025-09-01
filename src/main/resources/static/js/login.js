@@ -1,11 +1,11 @@
-// Helper to get correct base URL dynamically
-function getBaseURL() {
-  // Force HTTPS on deployment, keep HTTP for localhost
-  return (window.location.hostname === "localhost" ? window.location.protocol : "https:") + "//" + window.location.host;
+// ---------------- LOGIN ----------------
+
+// Force HTTPS on deployment (not for localhost)
+if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
+  window.location.href = window.location.href.replace("http:", "https:");
 }
 
-
-// ---------------- LOGIN ----------------
+// Handle login form submit
 document.getElementById("loginForm")?.addEventListener("submit", async function(e) {
   e.preventDefault();
 
@@ -20,16 +20,16 @@ document.getElementById("loginForm")?.addEventListener("submit", async function(
   }
 
   try {
-    const response = await fetch(getBaseURL() + "/login", {
+    const response = await fetch("/login", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({ username, password }),
-      credentials: "include"
+      credentials: "include" // important to store session cookie
     });
 
     if (response.ok) {
-      // Redirect to notes page
-      window.location.href = getBaseURL() + "/notes.html";
+      // Redirect to notes page using relative path
+      window.location.href = "/notes.html";
     } else {
       errorMsg.textContent = "Invalid username or password.";
     }
