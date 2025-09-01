@@ -1,6 +1,11 @@
 // ---------------- REGISTER ----------------
-function getBaseURL() { return window.location.protocol + "//" + window.location.host; }
 
+// Helper to get base URL
+function getBaseURL() {
+  return window.location.protocol + "//" + window.location.host;
+}
+
+// Register form
 document.getElementById("registerForm")?.addEventListener("submit", async function(e) {
   e.preventDefault();
 
