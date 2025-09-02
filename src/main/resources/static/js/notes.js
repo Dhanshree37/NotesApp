@@ -213,5 +213,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // --- Bug fix: ensure notes reload after login/refresh/back ---
 window.addEventListener("pageshow", () => {
-  fetchNotes();
+  // Slight delay to ensure all DOM elements are ready
+  setTimeout(() => fetchNotes(), 0);
 });
