@@ -1,12 +1,11 @@
 // notes.js
 
-// Force HTTPS for deployment
+// Force HTTPS on deployment
 if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
   window.location.href = window.location.href.replace("http:", "https:");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  // --- Elements ---
   const notesList = document.getElementById("notesList");
   const noteForm = document.getElementById("noteForm");
   const titleInput = document.getElementById("title");
@@ -28,7 +27,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Fetch all notes ---
   async function fetchNotes() {
     try {
-      const res = await fetch("/api/notes", { credentials: "include" });
+      const res = await fetch("/api/notes", { 
+        credentials: "include", 
+        cache: "no-store" 
+      });
       if (res.status === 401) {
         window.location.href = "/login.html";
         return;
@@ -60,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
 
-      // --- Card menu toggle ---
       const menuBtn = noteDiv.querySelector(".note-menu-btn");
       const menu = noteDiv.querySelector(".note-menu");
       menuBtn.addEventListener("click", e => {
@@ -68,23 +69,23 @@ document.addEventListener("DOMContentLoaded", () => {
         menu.classList.toggle("hidden");
       });
 
-      // --- Pin/unpin from card ---
+      // Pin/unpin
       menu.querySelector(".pin-btn").addEventListener("click", e => {
         e.stopPropagation();
         fetch(`/api/notes/${note.id}/pin`, { method: "PUT", credentials: "include" })
           .then(fetchNotes)
-          .catch(err => console.error(err));
+          .catch(console.error);
       });
 
-      // --- Delete from card ---
+      // Delete
       menu.querySelector(".delete-btn").addEventListener("click", e => {
         e.stopPropagation();
         fetch(`/api/notes/${note.id}`, { method: "DELETE", credentials: "include" })
           .then(fetchNotes)
-          .catch(err => console.error(err));
+          .catch(console.error);
       });
 
-      // --- Open overlay on click (outside menu) ---
+      // Open overlay
       noteDiv.addEventListener("click", e => {
         if (!e.target.classList.contains("note-menu-btn") && !e.target.closest(".note-menu")) {
           openOverlay(note);
@@ -108,21 +109,15 @@ document.addEventListener("DOMContentLoaded", () => {
     currentNote = null;
   }
 
-  // --- Autosave overlay edits ---
   function autosave() {
     if (!currentNote) return;
-    const updatedNote = {
-      title: overlayTitle.value,
-      content: overlayContent.value
-    };
+    const updatedNote = { title: overlayTitle.value, content: overlayContent.value };
     fetch(`/api/notes/${currentNote.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedNote),
       credentials: "include"
-    })
-      .then(fetchNotes)
-      .catch(err => console.error("Error updating note:", err));
+    }).then(fetchNotes).catch(console.error);
   }
 
   overlayTitle.addEventListener("input", autosave);
@@ -130,16 +125,14 @@ document.addEventListener("DOMContentLoaded", () => {
   overlayTitle.addEventListener("paste", autosave);
   overlayContent.addEventListener("paste", autosave);
 
-  // --- Overlay pin/unpin ---
   overlayPinBtn.addEventListener("click", () => {
     if (!currentNote) return;
     fetch(`/api/notes/${currentNote.id}/pin`, { method: "PUT", credentials: "include" })
       .then(fetchNotes)
       .then(() => openOverlay(currentNote))
-      .catch(err => console.error("Error pinning note:", err));
+      .catch(console.error);
   });
 
-  // --- Overlay delete ---
   overlayDeleteBtn.addEventListener("click", () => {
     if (!currentNote) return;
     fetch(`/api/notes/${currentNote.id}`, { method: "DELETE", credentials: "include" })
@@ -147,10 +140,9 @@ document.addEventListener("DOMContentLoaded", () => {
         closeOverlay();
         fetchNotes();
       })
-      .catch(err => console.error("Error deleting note:", err));
+      .catch(console.error);
   });
 
-  // --- Overlay close ---
   overlayCloseBtn.addEventListener("click", closeOverlay);
 
   // --- Add new note ---
@@ -170,17 +162,16 @@ document.addEventListener("DOMContentLoaded", () => {
         contentInput.value = "";
         fetchNotes();
       })
-      .catch(err => console.error("Error adding note:", err));
+      .catch(console.error);
   });
 
-  // --- Search/filter ---
+  // --- Search ---
   searchInput.addEventListener("input", () => {
     const query = searchInput.value.toLowerCase();
-    const allNotes = document.querySelectorAll("#notesList .note");
-    allNotes.forEach(note => {
-      const title = note.querySelector("h3").textContent.toLowerCase();
-      const content = note.querySelector("p").textContent.toLowerCase();
-      note.style.display = title.includes(query) || content.includes(query) ? "flex" : "none";
+    notes.forEach(note => {
+      const visible = note.title.toLowerCase().includes(query) || note.content.toLowerCase().includes(query);
+      const el = Array.from(notesList.children).find(div => div.querySelector("h3").textContent === note.title);
+      if (el) el.style.display = visible ? "flex" : "none";
     });
   });
 
@@ -189,7 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.classList.add("dark-mode");
     themeToggleBtn.textContent = "☀️";
   }
-
   themeToggleBtn.addEventListener("click", () => {
     document.body.classList.toggle("dark-mode");
     if (document.body.classList.contains("dark-mode")) {
@@ -205,9 +195,25 @@ document.addEventListener("DOMContentLoaded", () => {
   logoutBtn.addEventListener("click", () => {
     fetch("/logout", { method: "POST", credentials: "include" })
       .then(() => window.location.href = "/login.html?logout=true")
-      .catch(err => console.error("Error logging out:", err));
+      .catch(console.error);
   });
 
-  // --- Initialize ---
+  // --- Initial fetch ---
   fetchNotes();
+});
+
+// --- Ensure notes reload after login/back/forward ---
+window.addEventListener("pageshow", () => {
+  fetch("/api/notes", { credentials: "include", cache: "no-store" })
+    .then(res => res.json())
+    .then(notes => {
+      const notesList = document.getElementById("notesList");
+      notesList.innerHTML = "";
+      notes.forEach(note => {
+        const noteDiv = document.createElement("div");
+        noteDiv.innerHTML = `<h3>${note.title}</h3><p>${note.content}</p>`;
+        notesList.appendChild(noteDiv);
+      });
+    })
+    .catch(console.error);
 });
