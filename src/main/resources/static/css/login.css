@@ -10,13 +10,27 @@ body {
 
 .login-container {
     background: white;
-    padding: 2rem 2.5rem;
+    padding: 2rem;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 350px;
+    width: 90%;          /* take most of the screen width */
+    max-width: 400px;    /* limit width on large screens */
     box-sizing: border-box;
 }
+
+/* Make inputs and button stretch */
+input, button {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* For very small screens */
+@media (max-width: 400px) {
+    .login-container {
+        padding: 1.5rem 1rem;
+    }
+}
+
 
 .login-container h2 {
     text-align: center;
