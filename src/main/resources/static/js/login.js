@@ -26,6 +26,7 @@ document.getElementById("loginForm")?.addEventListener("submit", async function(
     });
 
     if (response.ok) {
+      // Use HTTPS-safe redirect
       window.location.href = window.location.origin + "/notes.html";
     } else {
       errorMsg.textContent = "Invalid username or password.";
