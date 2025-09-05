@@ -63,3 +63,37 @@ button:hover {
 .redirect a:hover {
     text-decoration: underline;
 }
+/* --- Responsive adjustments for register page --- */
+
+/* Small screens (mobile) */
+@media (max-width: 480px) {
+    .register-container {
+        width: 90%;         /* Take most of the screen width */
+        padding: 1.5rem;    /* Reduce padding for smaller screens */
+        padding-right: 2rem;
+    }
+
+    input, button {
+        font-size: 0.9rem;   /* Slightly smaller text */
+        padding: 8px;
+    }
+
+    button {
+        margin: 8px 0;
+    }
+}
+
+/* Medium screens (tablet) */
+@media (min-width: 481px) and (max-width: 768px) {
+    .register-container {
+        width: 80%;
+        max-width: 350px;
+        padding: 1.75rem;
+        padding-right: 3rem;
+    }
+
+    input, button {
+        font-size: 0.95rem;
+        padding: 9px;
+    }
+}
