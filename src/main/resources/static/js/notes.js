@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const noteForm = document.getElementById("noteForm");
   const titleInput = document.getElementById("title");
   const contentInput = document.getElementById("content");
-  const logoutBtn = document.getElementById("logoutBtn");
+  const logoutBtn = document.getElementById("logoutBtn"); // Make sure your logout button has this ID
   const searchInput = document.getElementById("searchNotes");
   const themeToggleBtn = document.getElementById("themeToggleBtn");
 
@@ -49,12 +49,13 @@ document.addEventListener("DOMContentLoaded", () => {
       displayNotes(notes);
     } catch (err) {
       console.error("[ERROR] Failed to fetch notes:", err);
-      notesList.textContent = "Failed to load notes.";
+      if (notesList) notesList.textContent = "Failed to load notes.";
     }
   }
 
   // --- Display notes ---
   function displayNotes(noteArray) {
+    if (!notesList) return;
     console.log("[DEBUG] displayNotes called with", noteArray.length, "notes");
     notesList.innerHTML = "";
 
@@ -88,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.stopPropagation();
         console.log("[DEBUG] Pin/unpin clicked for note id:", note.id);
         fetch(`/api/notes/${note.id}/pin`, { method: "PUT", credentials: "include" })
-          .then(() => fetchNotes())
+          .then(fetchNotes)
           .catch(err => console.error("[ERROR] Pin/unpin failed:", err));
       });
 
@@ -97,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.stopPropagation();
         console.log("[DEBUG] Delete clicked for note id:", note.id);
         fetch(`/api/notes/${note.id}`, { method: "DELETE", credentials: "include" })
-          .then(() => fetchNotes())
+          .then(fetchNotes)
           .catch(err => console.error("[ERROR] Delete failed:", err));
       });
 
@@ -139,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
       body: JSON.stringify(updatedNote),
       credentials: "include"
     })
-      .then(() => fetchNotes())
+      .then(fetchNotes)
       .catch(err => console.error("[ERROR] Autosave failed:", err));
   }
 
@@ -153,7 +154,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!currentNote) return;
     console.log("[DEBUG] Overlay pin/unpin clicked for note id:", currentNote.id);
     fetch(`/api/notes/${currentNote.id}/pin`, { method: "PUT", credentials: "include" })
-      .then(() => fetchNotes())
+      .then(fetchNotes)
       .then(() => openOverlay(currentNote))
       .catch(err => console.error("[ERROR] Overlay pin failed:", err));
   });
@@ -225,13 +226,17 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // --- Logout ---
-  logoutBtn.addEventListener("click", e => {
-    e.preventDefault();
-    console.log("[DEBUG] Logging out");
-    fetch("/logout", { method: "POST", credentials: "include" })
-      .then(() => window.location.href = "/login.html?logout=true")
-      .catch(err => console.error("[ERROR] Logout failed:", err));
-  });
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", e => {
+      e.preventDefault();
+      console.log("[DEBUG] Logging out");
+      fetch("/logout", { method: "POST", credentials: "include" })
+        .then(() => window.location.href = "/login.html?logout=true")
+        .catch(err => console.error("[ERROR] Logout failed:", err));
+    });
+  } else {
+    console.warn("[WARN] logoutBtn not found");
+  }
 
   // --- Initial fetch ---
   fetchNotes();
