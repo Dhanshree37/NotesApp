@@ -195,13 +195,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Logout ---
   if (logoutBtn) {
-    logoutBtn.addEventListener("click", e => {
-      e.preventDefault();
-      fetch("/logout", { method: "POST", credentials: "include" })
-        .then(() => window.location.href = "/login.html?logout=true")
-        .catch(console.error);
-    });
-  }
+  logoutBtn.addEventListener("click", e => {
+    e.preventDefault(); // stop default form behavior
+    fetch("/logout", { method: "POST", credentials: "include" })
+      .then(() => window.location.href = "/login.html?logout=true")
+      .catch(console.error);
+  });
+}
+
 
   // --- Initial fetch ---
   fetchNotes();
