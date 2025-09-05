@@ -5,19 +5,15 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
-    padding: 1rem; /* extra padding for small screens */
-    box-sizing: border-box;
 }
 
 .login-container {
     background: white;
     padding: 2rem;
+    padding-right: 3rem;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
+    width: 300px;
 }
 
 .login-container h2 {
@@ -25,29 +21,23 @@ body {
     margin-bottom: 1rem;
 }
 
-input, button {
-    width: 100%;
-    box-sizing: border-box;
-}
-
 input {
+    width: 100%;
     padding: 10px;
-    margin: 8px 0;
+    margin: 8px auto;
     border: 1px solid #ccc;
     border-radius: 5px;
-    font-size: 1rem;
 }
 
 button {  
     padding: 10px;
-    margin: 12px 0;
+    width: 100%;
+    margin: 8px 0 8px 9px;
     background-color: #00796b;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.2s ease;
 }
 
 button:hover {
@@ -57,10 +47,16 @@ button:hover {
 .error {
     color: red;
     text-align: center;
-    margin-top: 10px;
-    min-height: 1.2em; /* prevents layout shift */
+    margin-top: 15px;
+    display: block;
+    font-weight: bold;
 }
 
+/* ✅ Center messages inside the login box */
+#error-msg {
+    width: 100%;
+    text-align: center;
+}
 .redirect {
     text-align: center;
     margin-top: 1rem;
@@ -73,35 +69,4 @@ button:hover {
 
 .redirect a:hover {
     text-decoration: underline;
-}
-
-/* MOBILE & TABLET RESPONSIVE */
-@media (max-width: 480px) {
-    .login-container {
-        padding: 1.5rem 1rem;
-    }
-
-    h2 {
-        font-size: 1.4rem;
-    }
-
-    input, button {
-        font-size: 0.95rem;
-        padding: 8px;
-    }
-}
-
-@media (max-width: 320px) {
-    .login-container {
-        padding: 1rem 0.5rem;
-    }
-
-    h2 {
-        font-size: 1.2rem;
-    }
-
-    input, button {
-        font-size: 0.9rem;
-        padding: 6px;
-    }
 }
