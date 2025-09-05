@@ -113,15 +113,14 @@ body {
 }
 
 /* Notes list grid */
+
 #notesList {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 35px;
   margin-top: 20px;
-  padding-right: 30px;
   justify-content: center;
 }
-
 /* Individual note cards */
 .note {
   background: #fff;
