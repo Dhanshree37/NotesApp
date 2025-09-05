@@ -1,9 +1,15 @@
+// notes.js
+
 // Force HTTPS for deployment
 if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
   window.location.href = window.location.href.replace("http:", "https:");
 }
 
+console.log("[DEBUG] Script loaded. Current cookies:", document.cookie);
+
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("[DEBUG] DOMContentLoaded triggered");
+
   // --- Elements ---
   const notesList = document.getElementById("notesList");
   const noteForm = document.getElementById("noteForm");
@@ -25,25 +31,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Fetch all notes ---
   async function fetchNotes() {
+    console.log("[DEBUG] fetchNotes called, sending request to /api/notes");
     try {
       const res = await fetch("/api/notes", { credentials: "include", cache: "no-store" });
+      console.log("[DEBUG] Response status:", res.status);
+
       if (res.status === 401) {
+        console.log("[DEBUG] User not authenticated, redirecting to login");
         window.location.href = "/login.html";
         return;
       }
+
       notes = await res.json();
+      console.log("[DEBUG] Notes fetched:", notes);
+
       notes.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
       displayNotes(notes);
     } catch (err) {
-      console.error("Error fetching notes:", err);
+      console.error("[ERROR] Failed to fetch notes:", err);
       notesList.textContent = "Failed to load notes.";
     }
   }
 
   // --- Display notes ---
   function displayNotes(noteArray) {
+    console.log("[DEBUG] displayNotes called with", noteArray.length, "notes");
     notesList.innerHTML = "";
+
     noteArray.forEach(note => {
+      console.log("[DEBUG] Rendering note:", note);
       const noteDiv = document.createElement("div");
       noteDiv.className = "note";
       if (note.pinned) noteDiv.classList.add("pinned");
@@ -64,27 +80,31 @@ document.addEventListener("DOMContentLoaded", () => {
       menuBtn.addEventListener("click", e => {
         e.stopPropagation();
         menu.classList.toggle("hidden");
+        console.log("[DEBUG] Note menu toggled for note id:", note.id);
       });
 
       // --- Pin/unpin ---
       menu.querySelector(".pin-btn").addEventListener("click", e => {
         e.stopPropagation();
+        console.log("[DEBUG] Pin/unpin clicked for note id:", note.id);
         fetch(`/api/notes/${note.id}/pin`, { method: "PUT", credentials: "include" })
-          .then(fetchNotes)
-          .catch(err => console.error(err));
+          .then(() => fetchNotes())
+          .catch(err => console.error("[ERROR] Pin/unpin failed:", err));
       });
 
       // --- Delete ---
       menu.querySelector(".delete-btn").addEventListener("click", e => {
         e.stopPropagation();
+        console.log("[DEBUG] Delete clicked for note id:", note.id);
         fetch(`/api/notes/${note.id}`, { method: "DELETE", credentials: "include" })
-          .then(fetchNotes)
-          .catch(err => console.error(err));
+          .then(() => fetchNotes())
+          .catch(err => console.error("[ERROR] Delete failed:", err));
       });
 
-      // --- Open overlay on click (outside menu) ---
+      // --- Open overlay on click ---
       noteDiv.addEventListener("click", e => {
         if (!e.target.classList.contains("note-menu-btn") && !e.target.closest(".note-menu")) {
+          console.log("[DEBUG] Overlay opened for note id:", note.id);
           openOverlay(note);
         }
       });
@@ -99,25 +119,28 @@ document.addEventListener("DOMContentLoaded", () => {
     overlayTitle.value = note.title;
     overlayContent.value = note.content;
     overlay.classList.remove("hidden");
+    console.log("[DEBUG] Overlay visible for note id:", note.id);
   }
 
   function closeOverlay() {
     overlay.classList.add("hidden");
     currentNote = null;
+    console.log("[DEBUG] Overlay closed");
   }
 
   // --- Autosave overlay edits ---
   function autosave() {
     if (!currentNote) return;
     const updatedNote = { title: overlayTitle.value, content: overlayContent.value };
+    console.log("[DEBUG] Autosaving note id:", currentNote.id, "with content:", updatedNote);
     fetch(`/api/notes/${currentNote.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedNote),
       credentials: "include"
     })
-      .then(fetchNotes)
-      .catch(err => console.error("Error updating note:", err));
+      .then(() => fetchNotes())
+      .catch(err => console.error("[ERROR] Autosave failed:", err));
   }
 
   overlayTitle.addEventListener("input", autosave);
@@ -128,21 +151,23 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Overlay pin/unpin ---
   overlayPinBtn.addEventListener("click", () => {
     if (!currentNote) return;
+    console.log("[DEBUG] Overlay pin/unpin clicked for note id:", currentNote.id);
     fetch(`/api/notes/${currentNote.id}/pin`, { method: "PUT", credentials: "include" })
-      .then(fetchNotes)
+      .then(() => fetchNotes())
       .then(() => openOverlay(currentNote))
-      .catch(err => console.error(err));
+      .catch(err => console.error("[ERROR] Overlay pin failed:", err));
   });
 
   // --- Overlay delete ---
   overlayDeleteBtn.addEventListener("click", () => {
     if (!currentNote) return;
+    console.log("[DEBUG] Overlay delete clicked for note id:", currentNote.id);
     fetch(`/api/notes/${currentNote.id}`, { method: "DELETE", credentials: "include" })
       .then(() => {
         closeOverlay();
         fetchNotes();
       })
-      .catch(err => console.error(err));
+      .catch(err => console.error("[ERROR] Overlay delete failed:", err));
   });
 
   // --- Overlay close ---
@@ -154,6 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const note = { title: titleInput.value.trim(), content: contentInput.value.trim() };
     if (!note.title || !note.content) return;
 
+    console.log("[DEBUG] Adding new note:", note);
     fetch("/api/notes", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -163,9 +189,10 @@ document.addEventListener("DOMContentLoaded", () => {
       .then(() => {
         titleInput.value = "";
         contentInput.value = "";
+        console.log("[DEBUG] Note added, fetching updated notes");
         fetchNotes();
       })
-      .catch(err => console.error("Error adding note:", err));
+      .catch(err => console.error("[ERROR] Adding note failed:", err));
   });
 
   // --- Search/filter ---
@@ -176,6 +203,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const el = Array.from(notesList.children).find(div => div.querySelector("h3").textContent === note.title);
       if (el) el.style.display = visible ? "flex" : "none";
     });
+    console.log("[DEBUG] Search filter applied:", query);
   });
 
   // --- Theme toggle ---
@@ -193,20 +221,29 @@ document.addEventListener("DOMContentLoaded", () => {
       themeToggleBtn.textContent = "🌙";
       localStorage.setItem("theme", "light");
     }
+    console.log("[DEBUG] Theme toggled:", document.body.classList.contains("dark-mode") ? "dark" : "light");
   });
 
   // --- Logout ---
-  logoutBtn.addEventListener("click", () => {
+  logoutBtn.addEventListener("click", e => {
+    e.preventDefault();
+    console.log("[DEBUG] Logging out");
     fetch("/logout", { method: "POST", credentials: "include" })
       .then(() => window.location.href = "/login.html?logout=true")
-      .catch(err => console.error("Error logging out:", err));
+      .catch(err => console.error("[ERROR] Logout failed:", err));
   });
 
   // --- Initial fetch ---
   fetchNotes();
 });
 
-// --- Ensure notes reload after login/refresh/back ---
+// --- Reload notes on back/refresh ---
 window.addEventListener("pageshow", () => {
-  setTimeout(() => fetchNotes(), 0);
+  console.log("[DEBUG] pageshow event triggered");
+  setTimeout(() => {
+    if (typeof fetchNotes === "function") {
+      console.log("[DEBUG] Reloading notes after pageshow");
+      fetchNotes();
+    }
+  }, 0);
 });
