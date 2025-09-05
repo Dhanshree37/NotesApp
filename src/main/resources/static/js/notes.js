@@ -1,5 +1,3 @@
-// notes.js
-
 // Force HTTPS for deployment
 if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
   window.location.href = window.location.href.replace("http:", "https:");
@@ -68,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         menu.classList.toggle("hidden");
       });
 
-      // --- Pin/unpin from card ---
+      // --- Pin/unpin ---
       menu.querySelector(".pin-btn").addEventListener("click", e => {
         e.stopPropagation();
         fetch(`/api/notes/${note.id}/pin`, { method: "PUT", credentials: "include" })
@@ -76,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
           .catch(err => console.error(err));
       });
 
-      // --- Delete from card ---
+      // --- Delete ---
       menu.querySelector(".delete-btn").addEventListener("click", e => {
         e.stopPropagation();
         fetch(`/api/notes/${note.id}`, { method: "DELETE", credentials: "include" })
@@ -111,10 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Autosave overlay edits ---
   function autosave() {
     if (!currentNote) return;
-    const updatedNote = {
-      title: overlayTitle.value,
-      content: overlayContent.value
-    };
+    const updatedNote = { title: overlayTitle.value, content: overlayContent.value };
     fetch(`/api/notes/${currentNote.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -136,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch(`/api/notes/${currentNote.id}/pin`, { method: "PUT", credentials: "include" })
       .then(fetchNotes)
       .then(() => openOverlay(currentNote))
-      .catch(err => console.error("Error pinning note:", err));
+      .catch(err => console.error(err));
   });
 
   // --- Overlay delete ---
@@ -147,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
         closeOverlay();
         fetchNotes();
       })
-      .catch(err => console.error("Error deleting note:", err));
+      .catch(err => console.error(err));
   });
 
   // --- Overlay close ---
@@ -211,8 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
   fetchNotes();
 });
 
-// --- Bug fix: ensure notes reload after login/refresh/back ---
+// --- Ensure notes reload after login/refresh/back ---
 window.addEventListener("pageshow", () => {
-  // Slight delay to ensure all DOM elements are ready
   setTimeout(() => fetchNotes(), 0);
 });
