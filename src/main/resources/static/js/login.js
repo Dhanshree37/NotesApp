@@ -29,6 +29,9 @@ document.getElementById("loginForm")?.addEventListener("submit", async function(
 
     if (response.ok) {
       // Redirect to notes page using relative path
+      await response.text(); 
+
+      // Now redirect
       window.location.href = "/notes.html";
     } else {
       errorMsg.textContent = "Invalid username or password.";
