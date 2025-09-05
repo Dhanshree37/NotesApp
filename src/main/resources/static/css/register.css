@@ -44,10 +44,11 @@ button:hover {
     background-color: #004d40;
 }
 
-.error {
+#error-msg {
     color: red;
     text-align: center;
     margin-top: 10px;
+    font-size: 0.95rem;
 }
 
 .redirect {
