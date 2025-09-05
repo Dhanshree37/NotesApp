@@ -1,5 +1,3 @@
-// notes.js
-
 // Force HTTPS for deployment
 if (window.location.protocol !== "https:" && window.location.hostname !== "localhost") {
   window.location.href = window.location.href.replace("http:", "https:");
@@ -12,7 +10,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const noteForm = document.getElementById("noteForm");
   const titleInput = document.getElementById("title");
   const contentInput = document.getElementById("content");
-  const logoutBtn = document.getElementById("logoutBtn"); // optional, may not exist
   const searchInput = document.getElementById("searchNotes");
   const themeToggleBtn = document.getElementById("themeToggleBtn");
 
@@ -37,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
       notes = await res.json();
       notes.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0));
       displayNotes(notes);
-    } catch (err) {
+    } catch {
       if (notesList) notesList.textContent = "Failed to load notes.";
     }
   }
@@ -116,9 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(updatedNote),
       credentials: "include"
-    })
-      .then(fetchNotes)
-      .catch(console.error);
+    }).then(fetchNotes).catch(console.error);
   }
 
   overlayTitle.addEventListener("input", autosave);
@@ -157,13 +152,11 @@ document.addEventListener("DOMContentLoaded", () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(note),
       credentials: "include"
-    })
-      .then(() => {
-        titleInput.value = "";
-        contentInput.value = "";
-        fetchNotes();
-      })
-      .catch(console.error);
+    }).then(() => {
+      titleInput.value = "";
+      contentInput.value = "";
+      fetchNotes();
+    }).catch(console.error);
   });
 
   // --- Search/filter ---
@@ -193,17 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // --- Logout ---
-  if (logoutBtn) {
-  logoutBtn.addEventListener("click", e => {
-    e.preventDefault(); // stop default form behavior
-    fetch("/logout", { method: "POST", credentials: "include" })
-      .then(() => window.location.href = "/login.html?logout=true")
-      .catch(console.error);
-  });
-}
-
-
   // --- Initial fetch ---
   fetchNotes();
 });
@@ -211,8 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // --- Reload notes on back/refresh ---
 window.addEventListener("pageshow", () => {
   setTimeout(() => {
-    if (typeof fetchNotes === "function") {
-      fetchNotes();
-    }
+    if (typeof fetchNotes === "function") fetchNotes();
   }, 0);
 });
